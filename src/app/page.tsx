@@ -1,5 +1,3 @@
-"use client"
-
 import React, { useState } from 'react'
 import MemoryCard from '@/components/MemoryCard'
 import Header from '../components/Header'
@@ -12,20 +10,36 @@ import RadioButton from '@/components/RadioButton'
 
 export default function Home() { 
   const [allCards, setAllCards] = useState(allFlashCards)
-  const [ showtitle, setShowtitle ] = useState(true)
+  const [ radioButtonShowTitle, setRadioButtonShowTitle ] = useState(true)
   function handleButtonClick() {
     const shuffledCards = helperShuffleArray(allCards)
     setAllCards(shuffledCards)
     
   }
-    function handleRadioShowTitleClick() {
-      setShowtitle(false);
-    }
+   
+    } 
     function handleRadioShowDescriptionClick() {
-      setShowtitle(true);
+      // prittier-ignore
+      const updateCards =
+       [... allCards].map(card => ({...card, showTitle: false}));
+      setAllCards(updateCards);
+      setRadioButtonShowTitle(false);
+          
+        }
+      
+    function handleRadioShowTitleClick() {
+      [... allCards].map(card => ({...card, showTitle: true}));
+      setAllCards(updateCards);
+      setRadioButtonShowTitle(true);
     }
 
-    console.log(showtitle)
+    function handleToggleFlashCard(cardId) {
+      const updateCards= [...allCards];
+      const cardIndex = updateCards.findIndex((card) => card.id === cardId);
+      updateCards[cardIndex].showTitle = !updateCards[cardIndex].showTitle;
+      setAllCards(updateCards);
+    }
+
     
   return (
     <>
@@ -35,11 +49,12 @@ export default function Home() {
         <div className='text-center mb-4'>
           <Button onButtonClick={handleButtonClick}>Embaralhar Cards</Button>
         </div>
+
         <div className='flex flex-row items-center justify-center space-x-4 m-4'>
           <RadioButton 
           id="radioButtonShowTitle" 
           name="showInfo"
-          buttonChecked={showtitle}
+          buttonChecked={radioButtonShowTitle}
           onButtonClick={handleRadioShowTitleClick}
           >
             Mostrar título
@@ -49,26 +64,43 @@ export default function Home() {
           <RadioButton 
           id="radioButtonShowDescription" 
           name="showInfo"
-          buttonChecked={showtitle}
+          buttonChecked={!radioButtonShowTitle}
           onButtonClick={handleRadioShowDescriptionClick}
           >
             Mostrar descrição
           
           </RadioButton>
-        </div>
         
+        </div>
+
         <Remember>
-          {
-          allFlashCards.map((card) => {
+          
+          {allFlashCards.map(({id, title, description, showTitle }) => {
             return (
-              <MemoryCard key={card.title} title={card.title} description={card.description} />
+              <MemoryCard 
+              key={id}
+              id={id}
+              title={title}
+              description={description}
+              showFlashCardTitle={showTitle}
+              onToggleFlashCard={handleToggleFlashCard}
+               />
     )
-  })
-  }
+  }) }
+ 
         </Remember>
       </Main>
 
     </>
    
-  )
+  );
+}
+
+function setAllCards(updateCards: any[]) {
+  throw new Error('Function not implemented.')
+}
+
+
+function setRadioButtonShowTitle(arg0: boolean) {
+  throw new Error('Function not implemented.')
 }

@@ -38,5 +38,12 @@ export const allFlashCards = [
     description: ''
 }
 ]
+.map(item => {
+    return {id: getNewId(), ...item, showtTitle: true};
+})
 
 .sort((a, b) => a.title.localeCompare(b.title))
+
+function getNewId(): any {
+    throw new Error("Function not implemented.");
+}

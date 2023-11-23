@@ -1,31 +1,31 @@
-'use client'
-
-import { useState } from "react"
-
 export default function MemoryCard({
+  id,
   title = 'Título do card', 
   description = 'Descrição do card que pode conter mais palavras que o título',
-
+  showFlashCardTitle = true,
+  onToggleFlashCard = null,
 }) {
-  const [ showtitle, setShowtitle ] = useState(true)
-
+  
   function handleCardClick() {
-    setShowtitle(currentShowTitle => !currentShowTitle)}
+    if (onToggleFlashCard) {
+      onToggleFlashCard(id);
+    }
+  }
 
-  const  fontSizeClassName = showtitle ? 'text-xl' : 'text-sm'
+  const  fontSizeClassName = showFlashCardTitle ? 'text-xl' : 'text-sm';
   return (
     <div
       className={`shadow-lg p-4 w-80 h-48 m-2 cursor-pointer
       flex flex-row justify-center items-center
-      font-semibold text-xl`}
+      font-semibold ${fontSizeClassName} text-xl`}
       style={{fontFamily: "'jetbrains mono, monospace"}}
       onClick={handleCardClick}
     >
 
-      {showtitle ?  title : description} 
+      {showFlashCardTitle ?  title : description} 
 
     </div>
 
-  ) 
-   
+  )
 }
+   
