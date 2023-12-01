@@ -1,50 +1,83 @@
-import React, { useState } from 'react'
+import { useEffect, useState } from 'react'
+import Button from '@/components/Button'
 import MemoryCard from '@/components/MemoryCard'
 import Header from '../components/Header'
 import Main from '../components/Main'
-import { allFlashCards } from '../../allFlashCards'
-import Remember from '@/components/Remember'
-import Button from '@/components/Button'
-import { helperShuffleArray } from '@/helpers/arrayHelpers'
 import RadioButton from '@/components/RadioButton'
+import Remember from '@/components/Remember'
+import { helperShuffleArray } from '@/helpers/arrayHelpers'
+import { apiGetAllFlashCards } from '@/data/allFlashCards'
 
 export default function Home() { 
-  const [allCards, setAllCards] = useState(allFlashCards)
+  // BACK END
+  const [allCards, setAllCards] = useState([]);
+
+  // PARA ESTUDO
+  const [studyCards, setStudyCards] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   const [ radioButtonShowTitle, setRadioButtonShowTitle ] = useState(true)
-  function handleButtonClick() {
-    const shuffledCards = helperShuffleArray(allCards)
-    setAllCards(shuffledCards)
+
+  useEffect (() => {
+    // PROMISE
+    // apiGetAllFlashCards().then((allFlashCards) => {
+    //   setAllCards(allFlashCards);
+    // });
+
     
-  }
+    async function getAllCards() {
+      const backEndAllCards = await apiGetAllFlashCards();
+      setAllCards(backEndAllCards);
+      setLoading(false);
+    }
+    getAllCards();
+   // IIFE
+    // (async function getAllCards() {
+    //   const backEndAllCards = await apiGetAllFlashCards();
+    //   setAllCards(backEndAllCards);
+    // }) ();
+    
+  }, []);
+    
+ 
+  function handleshuffle() {
+    const shuffledCards = helperShuffleArray(studyCards)
+    setStudyCards(shuffledCards)
+    }
+
+    useEffect(() => {
+      setStudyCards(allCards.map(card => ({...card, showTitle: true})));
+    }, [allCards]);
    
     } 
     function handleRadioShowDescriptionClick() {
       // prittier-ignore
       const updateCards =
-       [... allCards].map(card => ({...card, showTitle: false}));
-      setAllCards(updateCards);
+       [... studyCards].map(card => ({...card, showTitle: false}));
+      setStudyCards(updateCards);
       setRadioButtonShowTitle(false);
           
-        }
+    }
       
     function handleRadioShowTitleClick() {
-      [... allCards].map(card => ({...card, showTitle: true}));
-      setAllCards(updateCards);
+      const updateCards =
+      [...studyCards].map(card => ({...card, showTitle: true}));
+      setStudyCards(updateCards);
       setRadioButtonShowTitle(true);
     }
 
     function handleToggleFlashCard(cardId) {
-      const updateCards= [...allCards];
+      const updateCards= [...studyCards];
       const cardIndex = updateCards.findIndex((card) => card.id === cardId);
       updateCards[cardIndex].showTitle = !updateCards[cardIndex].showTitle;
-      setAllCards(updateCards);
+      setStudyCards(updateCards);
     }
 
     
   return (
     <>
       
-      <Header>Flash Cards</Header>
+      <Header>Flash Cards V2</Header>
       <Main>
         <div className='text-center mb-4'>
           <Button onButtonClick={handleButtonClick}>Embaralhar Cards</Button>
@@ -75,7 +108,7 @@ export default function Home() {
 
         <Remember>
           
-          {allFlashCards.map(({id, title, description, showTitle }) => {
+          {studysCards.map(({id, title, description, showTitle }) => {
             return (
               <MemoryCard 
               key={id}
@@ -94,7 +127,7 @@ export default function Home() {
     </>
    
   );
-}
+
 
 function setAllCards(updateCards: any[]) {
   throw new Error('Function not implemented.')
